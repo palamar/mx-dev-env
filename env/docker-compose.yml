@@ -1,0 +1,70 @@
+version: "3.0"
+volumes:
+    mx-code:
+        external: true
+
+services:
+    m2.dev:
+        image: "palamar/mx-nginx:latest" 
+        restart: always
+        container_name: mx-nginx
+        volumes:
+            - mx-code:/www
+        depends_on:
+            - mx-php-fpm
+            - m1.dev
+        links:
+            - mx-php-fpm
+            - m1.dev 
+        ports:
+            - "80:80"
+
+    m1.dev:
+        image: "palamar/mx-httpd:php-5.6-httpd"
+        restart: always
+        container_name: mx-httpd
+        volumes:
+            - mx-code:/www/
+        depends_on:
+            - mx-mysql
+        links:
+            - mx-mysql
+        command: ["bash", "-c", "usermod -u ${uid} www-data &&  apache2-foreground"]
+
+    mx-php-fpm:
+        image: "palamar/mx-php-fpm:7.0.10-fpm"
+        restart: always
+        container_name: mx-php-fpm
+        volumes:
+            - mx-code:/www
+        depends_on:
+            - mx-mysql
+        links:
+            - mx-mysql
+            - mx-redis
+        command: ["bash", "-c", "usermod -u ${uid} www-data &&  php-fpm"]
+ 
+
+    mx-mysql:
+        image: mysql:5.7
+        container_name: mx-mysql
+        environment:
+                MYSQL_ROOT_PASSWORD: 123123q
+        ports:
+            - "3306:3306"
+
+    mx-redis:
+        image: redis:latest
+        container_name: mx-redis
+        restart: always
+        
+    selenium:
+      image: selenium/standalone-firefox-debug:2.53.1
+      container_name: mx-selenium
+      depends_on:
+        - m2.dev
+      links:
+        - m2.dev
+      ports:
+        - "4444:4444"
+        - "5901:5900"

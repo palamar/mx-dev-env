@@ -1,0 +1,9 @@
+[submodule "env/mx-php-fpm"]
+	path = env/mx-php-fpm
+	url = git@github.com:palamar/mx-php-fpm.git
+[submodule "env/mx-nginx"]
+	path = env/mx-nginx
+	url = git@github.com:palamar/mx-nginx.git
+[submodule "env/mx-httpd"]
+	path = env/mx-httpd
+	url = git@github.com:palamar/mx-httpd.git
